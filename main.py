@@ -3,7 +3,6 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 import requests
-import os
 from huggingface_hub import hf_hub_download
 
 
@@ -31,19 +30,35 @@ html, body {
     color: #eaeaea;
     font-family: 'Inter', sans-serif;
 }
+
+/* Glass cards */
 .glass {
     background: rgba(255,255,255,0.08);
     backdrop-filter: blur(14px);
     border-radius: 16px;
-    padding: 24px;
+    padding: 28px;
     margin-bottom: 20px;
     border: 1px solid rgba(255,255,255,0.15);
 }
-.metric {
-    padding: 16px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 12px;
-    text-align: center;
+
+/* BIG BOLD HEADINGS (3x) */
+.big-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+/* BIG RESULT TEXT */
+.big-result {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #7CFC98;
+}
+
+/* Metric text */
+.metric-text {
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -59,12 +74,12 @@ tabs = st.tabs([
 ])
 
 
-# ================= LOAD DISEASE MODEL =================
+# ================= LOAD DISEASE MODEL (HF) =================
 @st.cache_resource
 def load_disease_model():
     model_path = hf_hub_download(
         repo_id="THEGBSON/fasalgpt-disease-model",
-        filename="trained_model.h5",   # ✅ exact file name on HF
+        filename="trained_model.h5",
         revision="main"
     )
     return tf.keras.models.load_model(model_path, compile=False)
@@ -72,7 +87,7 @@ def load_disease_model():
 disease_model = load_disease_model()
 
 
-# ================= DISEASE CLASS NAMES (38 CLASSES) =================
+# ================= DISEASE CLASSES (38) =================
 CLASS_NAMES = [
     'Apple___Apple_scab','Apple___Black_rot','Apple___Cedar_apple_rust',
     'Apple___healthy','Blueberry___healthy','Cherry___Powdery_mildew',
@@ -92,12 +107,11 @@ CLASS_NAMES = [
 ]
 
 
-# ================= WEATHER FUNCTION (STREAMLIT CLOUD SAFE) =================
+# ================= WEATHER FUNCTION =================
 def get_weather(city):
     try:
         api_key = st.secrets["OPENWEATHER_API_KEY"]
     except KeyError:
-        st.error("Weather API key not configured")
         return None
 
     url = "https://api.openweathermap.org/data/2.5/weather"
@@ -118,80 +132,69 @@ def get_weather(city):
 
 # ================= DISEASE PREDICTION =================
 def predict_disease(img):
-    image = tf.keras.preprocessing.image.load_img(
-        img, target_size=(128, 128)
-    )
-    img_array = tf.keras.preprocessing.image.img_to_array(image)
+    image = tf.keras.preprocessing.image.load_img(img, target_size=(128, 128))
+    arr = tf.keras.preprocessing.image.img_to_array(image)
+    arr = np.expand_dims(arr, axis=0)  # ❗ NO normalization
 
-    # ❌ DO NOT NORMALIZE
-    # img_array = img_array / 255.0  <-- REMOVE THIS
+    preds = disease_model.predict(arr)
+    idx = int(np.argmax(preds))
+    conf = float(np.max(preds)) * 100
 
-    img_array = np.expand_dims(img_array, axis=0)
-
-    preds = disease_model.predict(img_array)
-    class_index = int(np.argmax(preds))
-    confidence = float(np.max(preds)) * 100
-
-    return CLASS_NAMES[class_index], confidence
+    return CLASS_NAMES[idx], conf
 
 
 # ================= HOME =================
 with tabs[0]:
+    st.image("assets/banner.jpg", use_container_width=True)
     st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.header("🌾 FASALGPT")
+    st.markdown("<div class='big-title'>🌾 FASALGPT</div>", unsafe_allow_html=True)
     st.write("Government-grade AI platform for Indian agriculture.")
-    st.markdown("""
-    ✔ Real-time weather advisory  
-    ✔ AI-based crop disease detection  
-    ✔ Intelligent crop recommendation  
-    ✔ Secure & privacy-safe  
-    """)
     st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ================= WEATHER =================
 with tabs[1]:
+    st.image("assets/banner1.jpg", use_container_width=True)
     st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.header("🌦 Weather Advisory")
+    st.markdown("<div class='big-title'>🌦 Weather Advisory</div>", unsafe_allow_html=True)
 
     city = st.text_input("Enter City Name", "Delhi")
-
     if st.button("Get Weather"):
         weather = get_weather(city)
         if weather:
             c1, c2, c3, c4 = st.columns(4)
-            c1.metric("🌡 Temperature", f"{weather['temperature']} °C")
-            c2.metric("💧 Humidity", f"{weather['humidity']} %")
-            c3.metric("🌧 Rainfall", f"{weather['rainfall']} mm")
-            c4.metric("☁ Condition", weather["condition"])
+            c1.markdown(f"<div class='metric-text'>🌡 {weather['temperature']} °C</div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='metric-text'>💧 {weather['humidity']} %</div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='metric-text'>🌧 {weather['rainfall']} mm</div>", unsafe_allow_html=True)
+            c4.markdown(f"<div class='metric-text'>☁ {weather['condition']}</div>", unsafe_allow_html=True)
         else:
             st.error("Weather data unavailable")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-# ================= DISEASE DETECTION =================
+# ================= DISEASE =================
 with tabs[2]:
+    st.image("assets/banner2.jpg", use_container_width=True)
     st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.header("🦠 Crop Disease Detection")
+    st.markdown("<div class='big-title'>🦠 Disease Detection</div>", unsafe_allow_html=True)
 
-    img = st.file_uploader("Upload leaf image", ["jpg", "png", "jpeg"])
-
+    img = st.file_uploader("Upload Leaf Image", ["jpg", "png", "jpeg"])
     if img:
-        st.image(img, caption="Uploaded Leaf Image", use_container_width=True)
-
+        st.image(img, use_container_width=True)
         if st.button("Analyze Disease"):
             disease, conf = predict_disease(img)
-            st.success(f"🌱 Detected Disease: **{disease}**")
-            st.info(f"Confidence: {conf:.2f}%")
+            st.markdown(f"<div class='big-result'>{disease}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='metric-text'>Confidence: {conf:.2f}%</div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-# ================= CROP RECOMMENDATION =================
+# ================= CROP =================
 with tabs[3]:
+    st.image("assets/banner3.jpg", use_container_width=True)
     st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.header("🌾 Crop Recommendation")
+    st.markdown("<div class='big-title'>🌾 Crop Recommendation</div>", unsafe_allow_html=True)
 
     N = st.slider("Nitrogen", 0, 200, 50)
     P = st.slider("Phosphorus", 0, 200, 50)
@@ -200,25 +203,16 @@ with tabs[3]:
     rain = st.slider("Rainfall (mm)", 0, 300, 100)
 
     if st.button("Recommend Crop"):
-        if rain > 200:
-            crop = "Rice"
-        elif temp < 20:
-            crop = "Wheat"
-        else:
-            crop = "Maize"
-
-        st.success(f"✔ Recommended Crop: **{crop}**")
+        crop = "Rice" if rain > 200 else "Wheat" if temp < 20 else "Maize"
+        st.markdown(f"<div class='big-result'>{crop}</div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ================= ABOUT =================
 with tabs[4]:
+    st.image("assets/banner.jpg", use_container_width=True)
     st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.header("ℹ About FASALGPT")
-    st.write("""
-    FASALGPT is a secure AI-powered agriculture advisory system.
-    No personal data, identity, or developer information is exposed.
-    """)
+    st.markdown("<div class='big-title'>ℹ About FASALGPT</div>", unsafe_allow_html=True)
+    st.write("Secure AI-powered agriculture advisory system. No developer identity exposed.")
     st.markdown("</div>", unsafe_allow_html=True)
-
