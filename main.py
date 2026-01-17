@@ -118,16 +118,21 @@ def get_weather(city):
 
 # ================= DISEASE PREDICTION =================
 def predict_disease(img):
-    image = tf.keras.preprocessing.image.load_img(img, target_size=(128, 128))
+    image = tf.keras.preprocessing.image.load_img(
+        img, target_size=(128, 128)
+    )
     img_array = tf.keras.preprocessing.image.img_to_array(image)
-    img_array = img_array / 255.0               # ✅ IMPORTANT
+
+    # ❌ DO NOT NORMALIZE
+    # img_array = img_array / 255.0  <-- REMOVE THIS
+
     img_array = np.expand_dims(img_array, axis=0)
 
     preds = disease_model.predict(img_array)
-    idx = int(np.argmax(preds))
+    class_index = int(np.argmax(preds))
     confidence = float(np.max(preds)) * 100
 
-    return CLASS_NAMES[idx], confidence
+    return CLASS_NAMES[class_index], confidence
 
 
 # ================= HOME =================
@@ -216,3 +221,4 @@ with tabs[4]:
     No personal data, identity, or developer information is exposed.
     """)
     st.markdown("</div>", unsafe_allow_html=True)
+
