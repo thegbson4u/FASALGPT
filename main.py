@@ -2,218 +2,190 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+import requests
+import os
 
 from huggingface_hub import hf_hub_download
-from weather import get_weather
 
-
-# ================= STREAMLIT CONFIG =================
+# ================= PAGE CONFIG =================
 st.set_page_config(
-    page_title="FASALGPT | Smart Agriculture Assistant",
+    page_title="FASALGPT",
     page_icon="🌾",
     layout="wide",
 )
 
+# ================= HIDE STREAMLIT BRANDING & FOOTER =================
+st.markdown("""
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
 
 # ================= GLOBAL CSS =================
 st.markdown("""
 <style>
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    background: #0f1f17;
+body {
+    background-color: #0f1f17;
     color: #eaeaea;
+    font-family: Inter, sans-serif;
 }
-#MainMenu, footer, header {visibility: hidden;}
 
-.glass {
+.navbar {
+    display: flex;
+    gap: 18px;
+    padding: 12px 20px;
     background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 28px;
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
     margin-bottom: 20px;
 }
 
-.metric-box {
-    padding: 16px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 12px;
-    text-align: center;
-    font-size: 15px;
-}
-
-.alert {
-    padding: 14px;
-    border-left: 5px solid #FFC107;
-    background: rgba(255,193,7,0.18);
-    border-radius: 8px;
-    margin-top: 10px;
-}
-
-.stButton>button {
-    background: linear-gradient(135deg, #4CAF50, #2e7d32);
-    color: white;
-    border-radius: 10px;
+.nav-item {
     font-weight: 600;
+    cursor: pointer;
+}
+
+.box {
+    background: rgba(255,255,255,0.08);
+    padding: 22px;
+    border-radius: 14px;
+    margin-bottom: 20px;
 }
 </style>
 """, unsafe_allow_html=True)
 
+# ================= TOP NAV =================
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
 
-# ================= TOP NAVBAR =================
-st.markdown("""
-<div class="glass">
-  <h2>🌾 FasalGPT</h2>
-  <p>AI-Powered Smart Agriculture Assistant</p>
-</div>
-""", unsafe_allow_html=True)
+def nav_button(label):
+    if st.button(label):
+        st.session_state.page = label
 
+with st.container():
+    cols = st.columns(8)
+    labels = [
+        "Home", "Weather", "Disease",
+        "Crop", "Soil", "Irrigation",
+        "Schemes", "About"
+    ]
+    for i, label in enumerate(labels):
+        with cols[i]:
+            nav_button(label)
 
-# ================= LOAD DISEASE MODEL (HF) =================
-@st.cache_resource(show_spinner="Loading disease detection model...")
+page = st.session_state.page
+
+# ================= DISEASE LABELS =================
+DISEASE_CLASSES = [
+    "Healthy",
+    "Leaf Blight",
+    "Powdery Mildew",
+    "Rust",
+    "Leaf Spot"
+]
+
+# ================= LOAD MODELS =================
+@st.cache_resource
 def load_disease_model():
     model_path = hf_hub_download(
-        repo_id="THEGBSON/fasalGPT-disease-model",
-        filename="trained_model.h5",   # ✅ USE .h5
-        revision="main"
+        repo_id="THEGBSON/fasalgpt-disease-model",
+        filename="trained_model_keras.keras"
     )
     return tf.keras.models.load_model(model_path, compile=False)
 
-
-
 disease_model = load_disease_model()
 
+# ================= WEATHER FUNCTION =================
+def get_weather(city):
+    api_key = st.secrets["OPENWEATHER_API_KEY"]
 
-# ================= RULE-BASED CROP RECOMMENDATION =================
-def recommend_crop(N, P, K, temp, hum, ph, rain):
-    if rain > 200 and temp >= 25:
-        return "Rice 🌾"
-    if rain < 100 and temp >= 20:
-        return "Wheat 🌾"
-    if ph < 6.5:
-        return "Potato 🥔"
-    if K > 150:
-        return "Sugarcane 🎋"
-    return "Maize 🌽"
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    params = {"q": city, "appid": api_key, "units": "metric"}
 
+    r = requests.get(url, params=params)
+    r.raise_for_status()
+    data = r.json()
 
-# ================= WEATHER LOGIC =================
-def weather_advisory(city):
-    weather = get_weather(city)
-    advice = []
+    return {
+        "temp": data["main"]["temp"],
+        "humidity": data["main"]["humidity"],
+        "condition": data["weather"][0]["description"],
+        "rain": data.get("rain", {}).get("1h", 0)
+    }
 
-    if weather["rainfall"] > 5:
-        advice.append("🌧️ आज सिंचाई की आवश्यकता नहीं है")
-    if weather["temperature"] > 35:
-        advice.append("🔥 लू का खतरा – फसल को नुकसान हो सकता है")
-    if weather["humidity"] > 80:
-        advice.append("🦠 फंगल रोग का खतरा अधिक")
-
-    return weather, advice
-
-
-# ================= DISEASE PREDICTION =================
+# ================= PREDICT DISEASE =================
 def predict_disease(img):
-    image = tf.keras.preprocessing.image.load_img(img, target_size=(128, 128))
+    image = tf.keras.preprocessing.image.load_img(img, target_size=(128,128))
     arr = tf.keras.preprocessing.image.img_to_array(image)
-    arr = np.expand_dims(arr, axis=0)
+    arr = np.expand_dims(arr, axis=0) / 255.0
 
     preds = disease_model.predict(arr)
-    return int(np.argmax(preds)), float(np.max(preds))
+    idx = int(np.argmax(preds))
+    confidence = float(np.max(preds))
 
+    return DISEASE_CLASSES[idx], confidence
 
-# ================= SIDEBAR =================
-st.sidebar.title("🌱 Navigation")
-app_mode = st.sidebar.radio(
-    "",
-    ["Home", "Weather", "Disease Detection", "Crop Recommendation", "About"]
-)
+# ================= PAGES =================
+if page == "Home":
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
+    st.header("🌾 FasalGPT")
+    st.write("AI-powered smart agriculture assistant")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-
-# ================= HOME =================
-if app_mode == "Home":
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header("📊 Farmer Dashboard")
-    st.markdown("""
-    ✔ Real-time weather  
-    ✔ AI disease detection  
-    ✔ Smart crop recommendation  
-    ✔ Government-grade UI  
-    """)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ================= WEATHER =================
-elif app_mode == "Weather":
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
+elif page == "Weather":
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
     st.header("🌦 Weather Advisory")
 
-    city = st.text_input("शहर का नाम", "Delhi")
-
+    city = st.text_input("Enter city", "Delhi")
     if st.button("Get Weather"):
-        weather, advice = weather_advisory(city)
+        w = get_weather(city)
+        st.metric("🌡 Temperature", f"{w['temp']} °C")
+        st.metric("💧 Humidity", f"{w['humidity']} %")
+        st.metric("🌧 Rainfall", f"{w['rain']} mm")
+        st.write(f"☁ Condition: {w['condition']}")
 
-        c1, c2, c3, c4 = st.columns(4)
-        c1.markdown(f"<div class='metric-box'>🌡 {weather['temperature']} °C</div>", unsafe_allow_html=True)
-        c2.markdown(f"<div class='metric-box'>💧 {weather['humidity']} %</div>", unsafe_allow_html=True)
-        c3.markdown(f"<div class='metric-box'>🌧 {weather['rainfall']} mm</div>", unsafe_allow_html=True)
-        c4.markdown(f"<div class='metric-box'>☁ {weather['condition']}</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-        for a in advice:
-            st.markdown(f"<div class='alert'>{a}</div>", unsafe_allow_html=True)
+elif page == "Disease":
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
+    st.header("🦠 Disease Detection")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    img = st.file_uploader("Upload leaf image", ["jpg","png","jpeg"])
+    if img:
+        st.image(img, use_container_width=True)
+        if st.button("Analyze"):
+            disease, conf = predict_disease(img)
+            st.success(f"Disease: {disease}")
+            st.info(f"Confidence: {conf*100:.2f}%")
 
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= DISEASE DETECTION =================
-elif app_mode == "Disease Detection":
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header("🦠 Crop Disease Detection")
-
-    img = st.file_uploader("पत्ती की फोटो अपलोड करें", ["jpg", "png", "jpeg"])
-
-    if img and st.button("Analyze"):
-        with st.spinner("Analyzing crop image..."):
-            idx, conf = predict_disease(img)
-
-        st.success(f"रोग पहचान (Class ID): {idx}")
-        st.info(f"Confidence: {conf * 100:.2f}%")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ================= CROP RECOMMENDATION =================
-elif app_mode == "Crop Recommendation":
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
+elif page == "Crop":
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
     st.header("🌾 Crop Recommendation")
 
-    N = st.slider("Nitrogen", 0, 200, 50)
-    P = st.slider("Phosphorus", 0, 200, 50)
-    K = st.slider("Potassium", 0, 200, 50)
-    ph = st.slider("Soil pH", 0.0, 14.0, 7.0)
-    temp = st.slider("Temperature", 0, 50, 25)
-    hum = st.slider("Humidity", 0, 100, 60)
     rain = st.slider("Rainfall", 0, 300, 100)
+    temp = st.slider("Temperature", 0, 50, 25)
+    ph = st.slider("Soil pH", 0.0, 14.0, 7.0)
 
     if st.button("Recommend"):
-        crop = recommend_crop(N, P, K, temp, hum, ph, rain)
-        st.success(f"✔ अनुशंसित फसल: {crop}")
+        if rain > 200:
+            st.success("Rice")
+        elif ph < 6.5:
+            st.success("Potato")
+        else:
+            st.success("Wheat")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
+elif page in ["Soil", "Irrigation", "Schemes"]:
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
+    st.info("Module coming soon")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= ABOUT =================
-elif app_mode == "About":
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.markdown("""
-    **FasalGPT** is an AI-powered agriculture assistant for Indian farmers.
-
-    ✔ Weather intelligence  
-    ✔ Deep-learning disease detection  
-    ✔ Smart crop advisory  
-    ✔ Cloud-deployed AI system  
-    """)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-
+elif page == "About":
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
+    st.write("FasalGPT – Smart agriculture assistant for farmers.")
+    st.markdown("</div>", unsafe_allow_html=True)
