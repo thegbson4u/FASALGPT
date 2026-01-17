@@ -1,7 +1,4 @@
-# ================= ENV & IMPORTS =================
-from dotenv import load_dotenv
-load_dotenv()
-
+# ================= IMPORTS =================
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -11,12 +8,14 @@ import os
 from huggingface_hub import hf_hub_download
 from weather import get_weather
 
+
 # ================= STREAMLIT CONFIG =================
 st.set_page_config(
     page_title="FASALGPT | Smart Agriculture Assistant",
     page_icon="🌾",
     layout="wide",
 )
+
 
 # ================= GLOBAL CSS =================
 st.markdown("""
@@ -62,22 +61,25 @@ html, body, [class*="css"] {
 </style>
 """, unsafe_allow_html=True)
 
+
 # ================= TOP NAVBAR =================
 st.markdown("""
 <div class="glass">
-<h2>🌾 FasalGPT</h2>
-<p>AI-Powered Smart Agriculture Assistant</p>
+  <h2>🌾 FasalGPT</h2>
+  <p>AI-Powered Smart Agriculture Assistant</p>
 </div>
 """, unsafe_allow_html=True)
 
+
 # ================= BASE DIRECTORY =================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 # ================= LOAD MODELS =================
 
 @st.cache_resource
 def load_crop_model():
-    """Small ML model – safe to keep locally"""
+    """Small ML model stored in GitHub repo"""
     return joblib.load(
         os.path.join(BASE_DIR, "models", "crop_recommendation_model.pkl")
     )
@@ -87,7 +89,7 @@ def load_crop_model():
 def load_disease_model():
     """
     Large (92MB) TensorFlow model
-    Loaded from Hugging Face to bypass Streamlit/GitHub limits
+    Loaded from Hugging Face (safe for Streamlit Cloud)
     """
     model_path = hf_hub_download(
         repo_id="THEGBSON/fasalgpt-disease-model",
@@ -98,6 +100,7 @@ def load_disease_model():
 
 crop_model = load_crop_model()
 disease_model = load_disease_model()
+
 
 # ================= WEATHER LOGIC =================
 def weather_advisory(city):
@@ -115,6 +118,7 @@ def weather_advisory(city):
 
     return weather, advice
 
+
 # ================= DISEASE PREDICTION =================
 def predict_disease(img):
     image = tf.keras.preprocessing.image.load_img(
@@ -128,6 +132,7 @@ def predict_disease(img):
     confidence = float(np.max(preds))
 
     return class_index, confidence
+
 
 # ================= SIDEBAR =================
 st.sidebar.title("🌱 Navigation")
@@ -149,6 +154,7 @@ app_mode = st.sidebar.radio(
     ]
 )
 
+
 # ================= HOME =================
 if app_mode == "Home":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
@@ -167,6 +173,7 @@ if app_mode == "Home":
     """)
     st.markdown('</div>', unsafe_allow_html=True)
 
+
 # ================= WEATHER =================
 elif app_mode == "Weather":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
@@ -179,22 +186,10 @@ elif app_mode == "Weather":
             weather, advice = weather_advisory(city)
 
             c1, c2, c3, c4 = st.columns(4)
-            c1.markdown(
-                f"<div class='metric-box'>🌡 {weather['temperature']} °C</div>",
-                unsafe_allow_html=True
-            )
-            c2.markdown(
-                f"<div class='metric-box'>💧 {weather['humidity']} %</div>",
-                unsafe_allow_html=True
-            )
-            c3.markdown(
-                f"<div class='metric-box'>🌧 {weather['rainfall']} mm</div>",
-                unsafe_allow_html=True
-            )
-            c4.markdown(
-                f"<div class='metric-box'>☁ {weather['condition']}</div>",
-                unsafe_allow_html=True
-            )
+            c1.markdown(f"<div class='metric-box'>🌡 {weather['temperature']} °C</div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='metric-box'>💧 {weather['humidity']} %</div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='metric-box'>🌧 {weather['rainfall']} mm</div>", unsafe_allow_html=True)
+            c4.markdown(f"<div class='metric-box'>☁ {weather['condition']}</div>", unsafe_allow_html=True)
 
             for a in advice:
                 st.markdown(f"<div class='alert'>{a}</div>", unsafe_allow_html=True)
@@ -204,6 +199,7 @@ elif app_mode == "Weather":
             st.exception(e)
 
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ================= DISEASE DETECTION =================
 elif app_mode == "Disease Detection":
@@ -224,6 +220,7 @@ elif app_mode == "Disease Detection":
 
     st.markdown('</div>', unsafe_allow_html=True)
 
+
 # ================= CROP RECOMMENDATION =================
 elif app_mode == "Crop Recommendation":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
@@ -238,12 +235,11 @@ elif app_mode == "Crop Recommendation":
     rain = st.slider("Rainfall", 0, 300, 100)
 
     if st.button("Recommend"):
-        crop = crop_model.predict(
-            [[N, P, K, temp, hum, ph, rain]]
-        )
+        crop = crop_model.predict([[N, P, K, temp, hum, ph, rain]])
         st.success(f"✔ अनुशंसित फसल: {crop[0]}")
 
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ================= PLACEHOLDER MODULES =================
 elif app_mode in [
@@ -259,6 +255,7 @@ elif app_mode in [
     st.header(app_mode)
     st.info("🚧 This module is UI-ready. Backend integration coming next.")
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ================= ABOUT =================
 elif app_mode == "About":
