@@ -2,7 +2,6 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-import joblib
 import os
 
 from huggingface_hub import hf_hub_download
@@ -71,26 +70,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ================= BASE DIRECTORY =================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
-# ================= LOAD MODELS =================
-
-@st.cache_resource
-def load_crop_model():
-    """Small ML model stored in GitHub repo"""
-    return joblib.load(
-        os.path.join(BASE_DIR, "models", "crop_recommendation_model.pkl")
-    )
-
-
+# ================= LOAD DISEASE MODEL =================
 @st.cache_resource
 def load_disease_model():
-    """
-    Large (92MB) TensorFlow model
-    Loaded from Hugging Face (safe for Streamlit Cloud)
-    """
     model_path = hf_hub_download(
         repo_id="THEGBSON/fasalgpt-disease-model",
         filename="trained_model_keras.keras"
@@ -98,8 +80,20 @@ def load_disease_model():
     return tf.keras.models.load_model(model_path)
 
 
-crop_model = load_crop_model()
 disease_model = load_disease_model()
+
+
+# ================= RULE-BASED CROP RECOMMENDATION =================
+def recommend_crop(N, P, K, temp, hum, ph, rain):
+    if rain > 200 and temp >= 25:
+        return "Rice 🌾"
+    if rain < 100 and temp >= 20:
+        return "Wheat 🌾"
+    if ph < 6.5:
+        return "Potato 🥔"
+    if K > 150:
+        return "Sugarcane 🎋"
+    return "Maize 🌽"
 
 
 # ================= WEATHER LOGIC =================
@@ -109,10 +103,8 @@ def weather_advisory(city):
 
     if weather["rainfall"] > 5:
         advice.append("🌧️ आज सिंचाई की आवश्यकता नहीं है")
-
     if weather["temperature"] > 35:
         advice.append("🔥 लू का खतरा – फसल को नुकसान हो सकता है")
-
     if weather["humidity"] > 80:
         advice.append("🦠 फंगल रोग का खतरा अधिक")
 
@@ -121,37 +113,19 @@ def weather_advisory(city):
 
 # ================= DISEASE PREDICTION =================
 def predict_disease(img):
-    image = tf.keras.preprocessing.image.load_img(
-        img, target_size=(128, 128)
-    )
+    image = tf.keras.preprocessing.image.load_img(img, target_size=(128, 128))
     arr = tf.keras.preprocessing.image.img_to_array(image)
     arr = np.expand_dims(arr, axis=0)
 
     preds = disease_model.predict(arr)
-    class_index = int(np.argmax(preds))
-    confidence = float(np.max(preds))
-
-    return class_index, confidence
+    return int(np.argmax(preds)), float(np.max(preds))
 
 
 # ================= SIDEBAR =================
 st.sidebar.title("🌱 Navigation")
 app_mode = st.sidebar.radio(
     "",
-    [
-        "Home",
-        "Weather",
-        "Disease Detection",
-        "Crop Recommendation",
-        "Soil & Fertilizer",
-        "Irrigation Planner",
-        "Mandi Rates",
-        "Government Schemes",
-        "Crop Calendar",
-        "AI Chatbot",
-        "Settings",
-        "About"
-    ]
+    ["Home", "Weather", "Disease Detection", "Crop Recommendation", "About"]
 )
 
 
@@ -159,17 +133,10 @@ app_mode = st.sidebar.radio(
 if app_mode == "Home":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
     st.header("📊 Farmer Dashboard")
-
-    col1, col2, col3 = st.columns(3)
-    col1.metric("🌡 Temperature", "Live")
-    col2.metric("🌧 Rain Alert", "Next 48h")
-    col3.metric("🦠 Disease Risk", "Medium")
-
     st.markdown("""
     ✔ Real-time weather  
-    ✔ AI crop advisory  
-    ✔ Disease detection  
-    ✔ Government schemes  
+    ✔ AI disease detection  
+    ✔ Smart crop recommendation  
     """)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -177,26 +144,19 @@ if app_mode == "Home":
 # ================= WEATHER =================
 elif app_mode == "Weather":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header("🌦 Weather Advisory")
-
     city = st.text_input("शहर का नाम", "Delhi")
 
     if st.button("Get Weather"):
-        try:
-            weather, advice = weather_advisory(city)
+        weather, advice = weather_advisory(city)
 
-            c1, c2, c3, c4 = st.columns(4)
-            c1.markdown(f"<div class='metric-box'>🌡 {weather['temperature']} °C</div>", unsafe_allow_html=True)
-            c2.markdown(f"<div class='metric-box'>💧 {weather['humidity']} %</div>", unsafe_allow_html=True)
-            c3.markdown(f"<div class='metric-box'>🌧 {weather['rainfall']} mm</div>", unsafe_allow_html=True)
-            c4.markdown(f"<div class='metric-box'>☁ {weather['condition']}</div>", unsafe_allow_html=True)
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f"<div class='metric-box'>🌡 {weather['temperature']} °C</div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='metric-box'>💧 {weather['humidity']} %</div>", unsafe_allow_html=True)
+        c3.markdown(f"<div class='metric-box'>🌧 {weather['rainfall']} mm</div>", unsafe_allow_html=True)
+        c4.markdown(f"<div class='metric-box'>☁ {weather['condition']}</div>", unsafe_allow_html=True)
 
-            for a in advice:
-                st.markdown(f"<div class='alert'>{a}</div>", unsafe_allow_html=True)
-
-        except Exception as e:
-            st.error("❌ Weather data unavailable")
-            st.exception(e)
+        for a in advice:
+            st.markdown(f"<div class='alert'>{a}</div>", unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -204,17 +164,10 @@ elif app_mode == "Weather":
 # ================= DISEASE DETECTION =================
 elif app_mode == "Disease Detection":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header("🦠 Crop Disease Detection")
-
-    img = st.file_uploader(
-        "पत्ती की फोटो अपलोड करें",
-        ["jpg", "png", "jpeg"]
-    )
+    img = st.file_uploader("पत्ती की फोटो अपलोड करें", ["jpg", "png", "jpeg"])
 
     if img and st.button("Analyze"):
-        with st.spinner("Analyzing crop image..."):
-            idx, conf = predict_disease(img)
-
+        idx, conf = predict_disease(img)
         st.success(f"रोग पहचान (Class ID): {idx}")
         st.info(f"Confidence: {conf * 100:.2f}%")
 
@@ -224,7 +177,6 @@ elif app_mode == "Disease Detection":
 # ================= CROP RECOMMENDATION =================
 elif app_mode == "Crop Recommendation":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header("🌾 Crop Recommendation")
 
     N = st.slider("Nitrogen", 0, 200, 50)
     P = st.slider("Phosphorus", 0, 200, 50)
@@ -235,38 +187,14 @@ elif app_mode == "Crop Recommendation":
     rain = st.slider("Rainfall", 0, 300, 100)
 
     if st.button("Recommend"):
-        crop = crop_model.predict([[N, P, K, temp, hum, ph, rain]])
-        st.success(f"✔ अनुशंसित फसल: {crop[0]}")
+        crop = recommend_crop(N, P, K, temp, hum, ph, rain)
+        st.success(f"✔ अनुशंसित फसल: {crop}")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ================= PLACEHOLDER MODULES =================
-elif app_mode in [
-    "Soil & Fertilizer",
-    "Irrigation Planner",
-    "Mandi Rates",
-    "Government Schemes",
-    "Crop Calendar",
-    "AI Chatbot",
-    "Settings"
-]:
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header(app_mode)
-    st.info("🚧 This module is UI-ready. Backend integration coming next.")
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ================= ABOUT =================
 elif app_mode == "About":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.header("ℹ About FasalGPT")
-    st.markdown("""
-    **FasalGPT** is an AI-powered agriculture assistant designed for Indian farmers.
-
-    ✔ Weather intelligence  
-    ✔ Disease detection  
-    ✔ Crop planning  
-    ✔ Government advisory ready  
-    """)
+    st.markdown("FasalGPT – AI-powered agriculture assistant for Indian farmers.")
     st.markdown('</div>', unsafe_allow_html=True)
