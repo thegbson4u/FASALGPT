@@ -70,14 +70,15 @@ st.markdown("""
 
 
 # ================= LOAD DISEASE MODEL (HF) =================
-@st.cache_resource
+@st.cache_resource(show_spinner="Loading disease detection model...")
 def load_disease_model():
     model_path = hf_hub_download(
-        repo_id="THEGBSON/fasalgpt-disease-model",
-        filename="trained_model_keras.keras"
+        repo_id="THEGBSON/fasalGPT-disease-model",
+        filename="trained_model_keras.keras",
+        force_download=True  # IMPORTANT: refresh HF cache
     )
-    # IMPORTANT: compile=False avoids Keras version mismatch
     return tf.keras.models.load_model(model_path, compile=False)
+
 
 
 disease_model = load_disease_model()
@@ -213,3 +214,4 @@ elif app_mode == "About":
     ✔ Cloud-deployed AI system  
     """)
     st.markdown('</div>', unsafe_allow_html=True)
+
