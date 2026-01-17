@@ -2,7 +2,6 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-import os
 
 from huggingface_hub import hf_hub_download
 from weather import get_weather
@@ -70,14 +69,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ================= LOAD DISEASE MODEL =================
+# ================= LOAD DISEASE MODEL (HF) =================
 @st.cache_resource
 def load_disease_model():
     model_path = hf_hub_download(
         repo_id="THEGBSON/fasalgpt-disease-model",
         filename="trained_model_keras.keras"
     )
-    return tf.keras.models.load_model(model_path)
+    # IMPORTANT: compile=False avoids Keras version mismatch
+    return tf.keras.models.load_model(model_path, compile=False)
 
 
 disease_model = load_disease_model()
@@ -137,6 +137,7 @@ if app_mode == "Home":
     ✔ Real-time weather  
     ✔ AI disease detection  
     ✔ Smart crop recommendation  
+    ✔ Government-grade UI  
     """)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -144,6 +145,8 @@ if app_mode == "Home":
 # ================= WEATHER =================
 elif app_mode == "Weather":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
+    st.header("🌦 Weather Advisory")
+
     city = st.text_input("शहर का नाम", "Delhi")
 
     if st.button("Get Weather"):
@@ -164,10 +167,14 @@ elif app_mode == "Weather":
 # ================= DISEASE DETECTION =================
 elif app_mode == "Disease Detection":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
+    st.header("🦠 Crop Disease Detection")
+
     img = st.file_uploader("पत्ती की फोटो अपलोड करें", ["jpg", "png", "jpeg"])
 
     if img and st.button("Analyze"):
-        idx, conf = predict_disease(img)
+        with st.spinner("Analyzing crop image..."):
+            idx, conf = predict_disease(img)
+
         st.success(f"रोग पहचान (Class ID): {idx}")
         st.info(f"Confidence: {conf * 100:.2f}%")
 
@@ -177,6 +184,7 @@ elif app_mode == "Disease Detection":
 # ================= CROP RECOMMENDATION =================
 elif app_mode == "Crop Recommendation":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
+    st.header("🌾 Crop Recommendation")
 
     N = st.slider("Nitrogen", 0, 200, 50)
     P = st.slider("Phosphorus", 0, 200, 50)
@@ -196,5 +204,12 @@ elif app_mode == "Crop Recommendation":
 # ================= ABOUT =================
 elif app_mode == "About":
     st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.markdown("FasalGPT – AI-powered agriculture assistant for Indian farmers.")
+    st.markdown("""
+    **FasalGPT** is an AI-powered agriculture assistant for Indian farmers.
+
+    ✔ Weather intelligence  
+    ✔ Deep-learning disease detection  
+    ✔ Smart crop advisory  
+    ✔ Cloud-deployed AI system  
+    """)
     st.markdown('</div>', unsafe_allow_html=True)
