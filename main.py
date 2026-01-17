@@ -6,10 +6,9 @@ import requests
 import os
 from huggingface_hub import hf_hub_download
 
-
-# ================= STREAMLIT CONFIG =================
+# ================= CONFIG =================
 st.set_page_config(
-    page_title="FASALGPT | Digital Agriculture Advisory",
+    page_title="FasalGPT | AI-Powered Precision Agriculture",
     page_icon="🌾",
     layout="wide",
 )
@@ -17,66 +16,184 @@ st.set_page_config(
 # ================= HIDE STREAMLIT BRANDING =================
 st.markdown("""
 <style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
+#MainMenu, footer, header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ================= GLOBAL CSS =================
+# ================= GLOBAL THEME (HTML INSPIRED) =================
 st.markdown("""
 <style>
+:root {
+    --primary-green: #2e7d32;
+    --accent-glow: #00ff88;
+    --dark-bg: #121212;
+    --card-bg: #1e1e1e;
+    --text-gray: #b0b0b0;
+}
+
 html, body {
-    background: linear-gradient(135deg, #0b0f1a, #111827);
-    color: #eaeaea;
-    font-family: 'Inter', sans-serif;
+    background: var(--dark-bg);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* Section titles: BOLD + 3x size */
-.big-title {
-    font-size: 48px;
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 6%;
+    background: rgba(0,0,0,0.85);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.logo {
+    font-size: 26px;
     font-weight: 900;
-    margin-bottom: 20px;
+    color: var(--accent-glow);
 }
 
-.glass {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px);
+.nav-links span {
+    margin-left: 22px;
+    font-size: 14px;
+    cursor: pointer;
+    color: white;
+}
+
+/* HERO */
+.hero {
+    height: 80vh;
+    background:
+        linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
+        url("assets/banner.jpg") center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3.8rem;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: var(--text-gray);
+    font-size: 1.2rem;
+    max-width: 650px;
+    margin: auto;
+}
+
+.btn {
+    background: var(--primary-green);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 6px;
+    margin: 10px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid white;
+}
+
+/* FEATURES */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap: 30px;
+    padding: 90px 10%;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 32px;
     border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255,255,255,0.15);
+    text-align: center;
+    transition: 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-bottom: 3px solid var(--accent-glow);
+}
+
+.card h3 {
+    color: var(--accent-glow);
+}
+
+/* SECTION TITLE */
+.section-title {
+    font-size: 46px;
+    font-weight: 900;
+    margin-bottom: 30px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ================= SAFE BANNER LOADER =================
-def show_banner(path):
-    if os.path.exists(path):
-        st.image(path, use_container_width=True)
+# ================= NAVBAR =================
+st.markdown("""
+<div class="navbar">
+    <div class="logo">FasalGPT</div>
+    <div class="nav-links">
+        <span>Home</span>
+        <span>Weather</span>
+        <span>Disease</span>
+        <span>Crop</span>
+        <span>About</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# ================= TOP NAVIGATION =================
-tabs = st.tabs([
-    "🏠 Home",
-    "🌦 Weather Advisory",
-    "🦠 Disease Detection",
-    "🌾 Crop Recommendation",
-    "ℹ About"
-])
+# ================= HERO =================
+st.markdown("""
+<section class="hero">
+    <div>
+        <h1>FasalGPT</h1>
+        <p>Harnessing AI to bring sustainable, profitable, and precision agriculture to every Indian farmer.</p>
+        <div>
+            <span class="btn">Start Analysis</span>
+            <span class="btn btn-outline">Learn More</span>
+        </div>
+    </div>
+</section>
+""", unsafe_allow_html=True)
+
+# ================= FEATURES =================
+st.markdown("""
+<section class="features">
+    <div class="card">
+        <h3>Plant Health</h3>
+        <p>Detect diseases early and prevent crop loss.</p>
+    </div>
+    <div class="card">
+        <h3>AI Powered</h3>
+        <p>Deep learning models trained on 38 crop diseases.</p>
+    </div>
+    <div class="card">
+        <h3>Increase Yield</h3>
+        <p>Smart recommendations for higher productivity.</p>
+    </div>
+</section>
+""", unsafe_allow_html=True)
 
 # ================= LOAD DISEASE MODEL =================
 @st.cache_resource
 def load_disease_model():
     model_path = hf_hub_download(
         repo_id="THEGBSON/fasalgpt-disease-model",
-        filename="trained_model.h5",
-        revision="main"
+        filename="trained_model.h5"
     )
     return tf.keras.models.load_model(model_path, compile=False)
 
 disease_model = load_disease_model()
 
-# ================= DISEASE CLASS NAMES (38) =================
+# ================= DISEASE LABELS =================
 CLASS_NAMES = [
     'Apple___Apple_scab','Apple___Black_rot','Apple___Cedar_apple_rust',
     'Apple___healthy','Blueberry___healthy','Cherry___Powdery_mildew',
@@ -95,121 +212,19 @@ CLASS_NAMES = [
     'Tomato___Mosaic_virus','Tomato___healthy'
 ]
 
-# ================= WEATHER FUNCTION =================
-def get_weather(city):
-    try:
-        api_key = st.secrets["OPENWEATHER_API_KEY"]
-    except KeyError:
-        st.error("Weather API key not set in Streamlit secrets")
-        return None
+# ================= DISEASE DETECTION =================
+st.markdown("<div class='section-title'>🦠 Disease Detection</div>", unsafe_allow_html=True)
+img = st.file_uploader("Upload leaf image", ["jpg","png","jpeg"])
 
-    url = "https://api.openweathermap.org/data/2.5/weather"
-    params = {"q": city, "appid": api_key, "units": "metric"}
+if img:
+    st.image(img, use_container_width=True)
+    image = tf.keras.preprocessing.image.load_img(img, target_size=(128,128))
+    arr = tf.keras.preprocessing.image.img_to_array(image)
+    arr = np.expand_dims(arr, axis=0)
 
-    r = requests.get(url, params=params, timeout=10)
-    if r.status_code != 200:
-        return None
-
-    data = r.json()
-    return {
-        "temperature": data["main"]["temp"],
-        "humidity": data["main"]["humidity"],
-        "rainfall": data.get("rain", {}).get("1h", 0),
-        "condition": data["weather"][0]["description"]
-    }
-
-# ================= DISEASE PREDICTION =================
-def predict_disease(img):
-    image = tf.keras.preprocessing.image.load_img(img, target_size=(128, 128))
-    img_array = tf.keras.preprocessing.image.img_to_array(image)
-    img_array = np.expand_dims(img_array, axis=0)
-
-    preds = disease_model.predict(img_array)
+    preds = disease_model.predict(arr)
     idx = int(np.argmax(preds))
-    conf = float(np.max(preds)) * 100
+    conf = float(np.max(preds))*100
 
-    return CLASS_NAMES[idx], conf
-
-# ================= HOME =================
-with tabs[0]:
-    show_banner("assets/banner.jpg")
-    st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.markdown("<div class='big-title'>🌾 FASALGPT</div>", unsafe_allow_html=True)
-    st.write("""
-    Government-grade AI platform for Indian agriculture.
-
-    ✔ Weather advisory  
-    ✔ Disease detection  
-    ✔ Crop recommendation  
-    ✔ Privacy-first  
-    """)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# ================= WEATHER =================
-with tabs[1]:
-    show_banner("assets/banner1.jpg")
-    st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.markdown("<div class='big-title'>🌦 Weather Advisory</div>", unsafe_allow_html=True)
-
-    city = st.text_input("Enter City", "Delhi")
-    if st.button("Get Weather"):
-        weather = get_weather(city)
-        if weather:
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric("🌡 Temperature", f"{weather['temperature']} °C")
-            c2.metric("💧 Humidity", f"{weather['humidity']} %")
-            c3.metric("🌧 Rainfall", f"{weather['rainfall']} mm")
-            c4.metric("☁ Condition", weather["condition"])
-        else:
-            st.error("Weather data unavailable")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# ================= DISEASE =================
-with tabs[2]:
-    show_banner("assets/banner2.jpg")
-    st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.markdown("<div class='big-title'>🦠 Disease Detection</div>", unsafe_allow_html=True)
-
-    img = st.file_uploader("Upload leaf image", ["jpg", "png", "jpeg"])
-    if img:
-        st.image(img, use_container_width=True)
-        if st.button("Analyze Disease"):
-            disease, conf = predict_disease(img)
-            st.success(f"🌱 Disease: **{disease}**")
-            st.info(f"Confidence: {conf:.2f}%")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# ================= CROP =================
-with tabs[3]:
-    show_banner("assets/banner.jpg")
-    st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.markdown("<div class='big-title'>🌾 Crop Recommendation</div>", unsafe_allow_html=True)
-
-    N = st.slider("Nitrogen", 0, 200, 50)
-    P = st.slider("Phosphorus", 0, 200, 50)
-    K = st.slider("Potassium", 0, 200, 50)
-    temp = st.slider("Temperature (°C)", 0, 50, 25)
-    rain = st.slider("Rainfall (mm)", 0, 300, 100)
-
-    if st.button("Recommend Crop"):
-        crop = "Rice" if rain > 200 else "Wheat" if temp < 20 else "Maize"
-        st.success(f"✔ Recommended Crop: **{crop}**")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# ================= ABOUT =================
-with tabs[4]:
-    show_banner("assets/banner.jpg")
-    st.markdown("<div class='glass'>", unsafe_allow_html=True)
-    st.markdown("<div class='big-title'>ℹ About</div>", unsafe_allow_html=True)
-    st.write("""
-    FASALGPT is a secure AI-powered agriculture advisory system.
-
-    • No developer identity shown  
-    • No tracking  
-    • No profile links  
-    • Fully privacy-safe  
-    """)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.success(f"Detected Disease: **{CLASS_NAMES[idx]}**")
+    st.info(f"Confidence: {conf:.2f}%")
