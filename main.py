@@ -73,8 +73,8 @@ st.markdown("""
 @st.cache_resource(show_spinner="Loading disease detection model...")
 def load_disease_model():
     model_path = hf_hub_download(
-        repo_id="THEGBSON/fasalGPT-disease-model",  # ✅ EXACT CASE
-        filename="trained_model_keras.keras",      # ✅ EXACT NAME
+        repo_id="THEGBSON/fasalGPT-disease-model",
+        filename="trained_model.h5",   # ✅ USE .h5
         revision="main"
     )
     return tf.keras.models.load_model(model_path, compile=False)
@@ -214,5 +214,6 @@ elif app_mode == "About":
     ✔ Cloud-deployed AI system  
     """)
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 
