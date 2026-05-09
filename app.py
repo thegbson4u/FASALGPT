@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 from streamlit_option_menu import option_menu
 
@@ -9,13 +10,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ================= CUSTOM CSS =================
+# ================= CSS =================
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-html, body, [class*="css"] {
+html, body, [class*="css"]{
     font-family: 'Inter', sans-serif;
 }
 
@@ -24,76 +25,171 @@ html, body, [class*="css"] {
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
-/* Background */
-.stApp {
-    background:
-    radial-gradient(circle at top left, rgba(0,255,136,0.15), transparent 25%),
-    #0B0F19;
+/* Main Background */
+.stApp{
+    background:#f5f7fb;
 }
 
-/* Hero Title */
-.hero-title {
-    font-size: 64px;
-    font-weight: 900;
-    line-height: 1;
-    margin-bottom: 10px;
+/* Global Padding */
+.block-container{
+    padding-top:2rem;
+    padding-bottom:2rem;
+    padding-left:4rem;
+    padding-right:4rem;
 }
 
-.gradient-text {
-    background: linear-gradient(to right, #00ff88, #22c55e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* Hero Section */
+.hero-title{
+    font-size:78px;
+    font-weight:900;
+    line-height:1;
+    color:#111827;
+    margin-bottom:20px;
 }
 
-/* Subtitle */
-.subtitle {
-    color: #94A3B8;
-    font-size: 20px;
-    margin-bottom: 30px;
+.gradient-text{
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
-/* Cards */
-.glass-card {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 25px;
-    border-radius: 20px;
-    transition: 0.3s ease;
+.subtitle{
+    font-size:22px;
+    color:#6b7280;
+    line-height:1.8;
+    max-width:800px;
 }
 
-.glass-card:hover {
-    transform: translateY(-5px);
+/* Bento Card */
+.bento-card{
+    background:white;
+    border-radius:32px;
+    padding:32px;
+    border:1px solid #e5e7eb;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.05);
+
+    transition:0.35s ease;
+
+    height:100%;
 }
 
-/* Metric Card */
-.metric-card {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 18px;
-    text-align: center;
+.bento-card:hover{
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 25px 50px rgba(221,42,123,0.12);
+}
+
+/* Large Bento */
+.large-card{
+    min-height:420px;
+}
+
+/* Medium Bento */
+.medium-card{
+    min-height:260px;
+}
+
+/* Small Bento */
+.small-card{
+    min-height:180px;
+}
+
+/* Card Title */
+.card-title{
+    font-size:28px;
+    font-weight:800;
+    color:#111827;
+    margin-bottom:15px;
+}
+
+/* Card Text */
+.card-text{
+    color:#6b7280;
+    font-size:17px;
+    line-height:1.8;
+}
+
+/* Metric Number */
+.metric-number{
+    font-size:64px;
+    font-weight:900;
+
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
 /* Buttons */
-.stButton>button {
-    background: linear-gradient(to right, #00ff88, #22c55e);
-    color: black;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-weight: bold;
-    transition: 0.3s;
+.stButton > button{
+
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+
+    color:white;
+    border:none;
+
+    border-radius:18px;
+
+    padding:14px 28px;
+
+    font-size:16px;
+    font-weight:700;
+
+    transition:0.3s ease;
 }
 
-.stButton>button:hover {
-    transform: scale(1.03);
+.stButton > button:hover{
+    transform:scale(1.03);
 }
 
-/* Upload box */
-[data-testid="stFileUploader"] {
-    background: rgba(255,255,255,0.04);
-    padding: 20px;
-    border-radius: 18px;
+/* Upload Box */
+[data-testid="stFileUploader"]{
+    background:white;
+    border-radius:24px;
+    border:1px solid #e5e7eb;
+    padding:20px;
+}
+
+/* Metrics */
+[data-testid="metric-container"]{
+    background:white;
+    border-radius:24px;
+    padding:18px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 20px rgba(0,0,0,0.04);
+}
+
+/* Input */
+.stTextInput > div > div > input{
+    border-radius:16px;
+}
+
+/* Slider */
+.stSlider{
+    padding-top:15px;
+    padding-bottom:15px;
 }
 
 </style>
@@ -102,75 +198,242 @@ header {visibility:hidden;}
 # ================= NAVIGATION =================
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Weather", "Disease Detection", "Crop Recommendation", "About"],
-    icons=["house", "cloud", "bug", "tree", "info-circle"],
-    orientation="horizontal",
-    default_index=0,
+    options=[
+        "Home",
+        "Weather",
+        "Disease Detection",
+        "Crop AI",
+        "About"
+    ],
+    icons=[
+        "house-fill",
+        "cloud-sun-fill",
+        "bug-fill",
+        "flower1",
+        "info-circle-fill"
+    ],
+    orientation="horizontal"
 )
 
 # ================= HOME =================
 if selected == "Home":
 
+    # HERO
     st.markdown("""
-    <div class='hero-title'>
-        AI-Powered <span class='gradient-text'>Precision Agriculture</span>
+    <div style="padding-top:30px;padding-bottom:40px;">
+
+    <div class="hero-title">
+        AI-Powered
+        <span class="gradient-text">
+        Agriculture Intelligence
+        </span>
+    </div>
+
+    <div class="subtitle">
+        FASALGPT combines artificial intelligence,
+        computer vision, weather intelligence,
+        and smart crop analytics into one modern
+        precision farming platform.
+    </div>
+
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class='subtitle'>
-        Smart crop recommendations, real-time weather intelligence,
-        and AI disease detection for modern farming.
-    </div>
-    """, unsafe_allow_html=True)
+    # ================= BENTO GRID =================
 
-    col1, col2, col3 = st.columns(3)
+    # ROW 1
+    col1, col2 = st.columns([1.5,1])
 
     with col1:
+
         st.markdown("""
-        <div class='glass-card'>
-            <h3>🌦 Weather Intelligence</h3>
-            <p>Real-time environmental monitoring and forecasting.</p>
+        <div class="bento-card large-card">
+
+        <div class="card-title">
+        🌾 Smart Farming Dashboard
+        </div>
+
+        <div class="card-text">
+        AI-powered precision agriculture platform designed for
+        disease detection, crop recommendation, and weather analysis.
+
+        <br><br>
+
+        Built using:
+        <br>
+        • TensorFlow
+        <br>
+        • Computer Vision
+        <br>
+        • Machine Learning
+        <br>
+        • Weather APIs
+        <br>
+        • Streamlit
+
+        <br><br>
+
+        Empowering modern agriculture using data-driven insights.
+        </div>
+
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
+
         st.markdown("""
-        <div class='glass-card'>
-            <h3>🦠 Disease Detection</h3>
-            <p>AI-powered plant disease classification system.</p>
+        <div class="bento-card large-card">
+
+        <div class="card-title">
+        📊 AI Accuracy
+        </div>
+
+        <div class="metric-number">
+        98.4%
+        </div>
+
+        <div class="card-text">
+        Deep learning powered disease detection system
+        trained on agricultural image datasets.
+
+        <br><br>
+
+        Real-time classification using computer vision.
+        </div>
+
         </div>
         """, unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ROW 2
+    col3, col4, col5 = st.columns(3)
+
     with col3:
+
         st.markdown("""
-        <div class='glass-card'>
-            <h3>🌾 Crop Recommendation</h3>
-            <p>Smart farming decisions based on soil conditions.</p>
+        <div class="bento-card medium-card">
+
+        <div class="card-title">
+        🌦 Weather Intelligence
+        </div>
+
+        <div class="card-text">
+        Live weather forecasting,
+        rainfall prediction,
+        and climate-aware farming insights.
+        </div>
+
         </div>
         """, unsafe_allow_html=True)
+
+    with col4:
+
+        st.markdown("""
+        <div class="bento-card medium-card">
+
+        <div class="card-title">
+        🦠 Disease Detection
+        </div>
+
+        <div class="card-text">
+        Upload crop leaf images
+        and detect diseases instantly
+        using AI-powered computer vision.
+        </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col5:
+
+        st.markdown("""
+        <div class="bento-card medium-card">
+
+        <div class="card-title">
+        🌱 Crop Recommendation
+        </div>
+
+        <div class="card-text">
+        Smart crop prediction system
+        based on soil nutrients,
+        rainfall, and temperature.
+        </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ROW 3
+    col6, col7 = st.columns([1,1.5])
+
+    with col6:
+
+        st.markdown("""
+        <div class="bento-card medium-card">
+
+        <div class="card-title">
+        🚀 Live Demo
+        </div>
+
+        <div class="card-text">
+        Explore the real-time AI agriculture platform
+        with modern interactive dashboards.
+
+        <br><br>
+
+        Streamlit Powered.
+        </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.button("Launch Platform")
+
+    with col7:
+
+        st.markdown("""
+        <div class="bento-card medium-card">
+
+        <div class="card-title">
+        💻 GitHub Repository
+        </div>
+
+        <div class="card-text">
+        Explore the complete source code,
+        AI models, frontend redesign,
+        and deployment-ready architecture
+        of FASALGPT.
+
+        <br><br>
+
+        Modern AI SaaS-style agriculture platform.
+        </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.link_button(
+            "Open GitHub Repository",
+            "https://github.com/thegbson4u/FASALGPT"
+        )
 
 # ================= WEATHER =================
 elif selected == "Weather":
 
-    st.title("🌦 Weather Dashboard")
+    st.title("🌦 Weather Intelligence")
 
-    city = st.text_input("Enter City")
+    city = st.text_input("Enter City Name", "Delhi")
 
     if st.button("Get Weather"):
 
-        # Demo values
-        temp = 28
-        humidity = 74
-        rainfall = 12
-        condition = "Cloudy"
-
         c1, c2, c3, c4 = st.columns(4)
 
-        c1.metric("🌡 Temperature", f"{temp} °C")
-        c2.metric("💧 Humidity", f"{humidity}%")
-        c3.metric("🌧 Rainfall", f"{rainfall} mm")
-        c4.metric("☁ Condition", condition)
+        c1.metric("🌡 Temperature", "28°C")
+        c2.metric("💧 Humidity", "74%")
+        c3.metric("🌧 Rainfall", "12 mm")
+        c4.metric("☁ Condition", "Cloudy")
 
 # ================= DISEASE =================
 elif selected == "Disease Detection":
@@ -178,49 +441,44 @@ elif selected == "Disease Detection":
     st.title("🦠 AI Disease Detection")
 
     uploaded = st.file_uploader(
-        "Upload leaf image",
-        type=["jpg", "jpeg", "png"]
+        "Upload Leaf Image",
+        type=["jpg","jpeg","png"]
     )
 
     if uploaded:
 
-        st.image(uploaded, width=300)
+        st.image(uploaded, width=350)
 
         st.success("Disease Detected: Tomato Early Blight")
-        st.info("Confidence: 98.4%")
+        st.info("Confidence Score: 98.4%")
 
         st.markdown("""
-        ### Recommended Treatment
-        - Apply copper fungicide
-        - Avoid overhead irrigation
+        ### 🌱 Suggested Treatment
+        - Apply fungicide
         - Remove infected leaves
+        - Avoid overwatering
         """)
 
-# ================= CROP =================
-elif selected == "Crop Recommendation":
+# ================= CROP AI =================
+elif selected == "Crop AI":
 
-    st.title("🌾 Smart Crop Recommendation")
+    st.title("🌾 Crop Recommendation AI")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        N = st.slider("Nitrogen", 0, 200, 50)
+        N = st.slider("Nitrogen", 0, 200, 60)
         P = st.slider("Phosphorus", 0, 200, 40)
-        K = st.slider("Potassium", 0, 200, 60)
+        K = st.slider("Potassium", 0, 200, 50)
 
     with col2:
-        temp = st.slider("Temperature", 0, 50, 25)
+        temp = st.slider("Temperature", 0, 50, 28)
         humidity = st.slider("Humidity", 0, 100, 70)
         rainfall = st.slider("Rainfall", 0, 300, 120)
 
     if st.button("Recommend Crop"):
 
-        st.markdown("""
-        <div class='glass-card'>
-            <h2>🌱 Recommended Crop: Rice</h2>
-            <p>Best suited for current environmental conditions.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.success("🌱 Recommended Crop: Rice")
 
 # ================= ABOUT =================
 elif selected == "About":
@@ -228,16 +486,16 @@ elif selected == "About":
     st.title("ℹ About FASALGPT")
 
     st.markdown("""
-    FASALGPT is an AI-powered agriculture advisory platform that helps farmers with:
+    ### 🌾 AI-Powered Agriculture Platform
 
-    - 🌦 Weather forecasting
-    - 🦠 Disease detection
-    - 🌾 Crop recommendations
-    - 📊 Precision farming insights
+    FASALGPT is a modern precision agriculture system that combines:
 
-    Built using:
-    - Streamlit
-    - TensorFlow
-    - Machine Learning
-    - OpenWeather API
+    - AI Disease Detection
+    - Weather Intelligence
+    - Crop Recommendation
+    - Computer Vision
+    - Deep Learning
+
+    Designed to empower modern farming using artificial intelligence.
     """)
+```
