@@ -15,8 +15,16 @@ st.markdown("""
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+/* GLOBAL FONT + TEXT FIX */
 html, body, [class*="css"]{
     font-family: 'Inter', sans-serif;
+    color:#111827 !important;
+}
+
+/* FORCE ALL TEXT COLORS */
+h1, h2, h3, h4, h5, h6,
+p, span, div, label {
+    color:#111827 !important;
 }
 
 /* Hide Streamlit Branding */
@@ -24,9 +32,10 @@ html, body, [class*="css"]{
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
-/* Background */
+/* Main Background */
 .stApp{
-    background:#f6f8fc;
+    background:#f8fafc;
+    color:#111827;
 }
 
 /* Global Padding */
@@ -37,12 +46,23 @@ header {visibility:hidden;}
     padding-right:4rem;
 }
 
+/* Navigation Menu */
+.nav-link {
+    color:#111827 !important;
+}
+
+/* Option Menu Text Fix */
+nav a {
+    color:white !important;
+    font-weight:600 !important;
+}
+
 /* Hero Title */
 .hero-title{
     font-size:78px;
     font-weight:900;
     line-height:1;
-    color:#111827;
+    color:#111827 !important;
     margin-bottom:20px;
 }
 
@@ -63,7 +83,7 @@ header {visibility:hidden;}
 /* Subtitle */
 .subtitle{
     font-size:22px;
-    color:#6b7280;
+    color:#6b7280 !important;
     line-height:1.8;
     max-width:850px;
 }
@@ -90,6 +110,21 @@ header {visibility:hidden;}
     0 20px 50px rgba(221,42,123,0.12);
 }
 
+/* Card Title */
+.card-title{
+    font-size:28px;
+    font-weight:800;
+    color:#111827 !important;
+    margin-bottom:15px;
+}
+
+/* Card Text */
+.card-text{
+    color:#6b7280 !important;
+    font-size:17px;
+    line-height:1.8;
+}
+
 /* Large Card */
 .large-card{
     min-height:420px;
@@ -100,27 +135,7 @@ header {visibility:hidden;}
     min-height:260px;
 }
 
-/* Small Card */
-.small-card{
-    min-height:180px;
-}
-
-/* Card Title */
-.card-title{
-    font-size:28px;
-    font-weight:800;
-    color:#111827;
-    margin-bottom:15px;
-}
-
-/* Card Text */
-.card-text{
-    color:#6b7280;
-    font-size:17px;
-    line-height:1.8;
-}
-
-/* Metrics */
+/* Metric Number */
 .metric-number{
     font-size:72px;
     font-weight:900;
@@ -148,7 +163,7 @@ header {visibility:hidden;}
         #515bd4
     );
 
-    color:white;
+    color:white !important;
     border:none;
 
     border-radius:18px;
@@ -173,7 +188,12 @@ header {visibility:hidden;}
     padding:20px;
 }
 
-/* Metrics Container */
+/* Upload Text */
+[data-testid="stFileUploader"] *{
+    color:#111827 !important;
+}
+
+/* Metrics */
 [data-testid="metric-container"]{
     background:white;
     border-radius:24px;
@@ -182,15 +202,42 @@ header {visibility:hidden;}
     box-shadow:0 10px 20px rgba(0,0,0,0.04);
 }
 
-/* Input */
-.stTextInput > div > div > input{
-    border-radius:16px;
+/* Metric Text */
+[data-testid="metric-container"] *{
+    color:#111827 !important;
 }
 
-/* Slider */
+/* Input Fields */
+.stTextInput > div > div > input{
+    border-radius:16px;
+    color:#111827 !important;
+}
+
+/* Placeholder */
+input::placeholder{
+    color:#6b7280 !important;
+}
+
+/* Sliders */
 .stSlider{
     padding-top:15px;
     padding-bottom:15px;
+}
+
+/* Slider Labels */
+.stSlider label{
+    color:#111827 !important;
+    font-weight:600;
+}
+
+/* Markdown Text */
+.stMarkdown{
+    color:#111827 !important;
+}
+
+/* Success / Info Text */
+.stAlert{
+    color:#111827 !important;
 }
 
 </style>
