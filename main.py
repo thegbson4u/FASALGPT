@@ -499,4 +499,4 @@ elif selected == "About":
 
     Designed to empower modern farming using artificial intelligence.
     """)
-```
+
