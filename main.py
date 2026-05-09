@@ -197,6 +197,7 @@ header {visibility:hidden;}
 """, unsafe_allow_html=True)
 
 # ================= NAVIGATION =================
+# ================= NAVIGATION =================
 selected = option_menu(
     menu_title=None,
     options=[
@@ -213,9 +214,24 @@ selected = option_menu(
         "flower1",
         "info-circle-fill"
     ],
-    orientation="horizontal"
+    orientation="horizontal",
+    # ADD THIS SECTION BELOW TO FIX VISIBILITY
+    styles={
+        "container": {"padding": "0!important", "background-color": "#ffffff"},
+        "icon": {"color": "#111827", "font-size": "18px"}, 
+        "nav-link": {
+            "font-size": "16px", 
+            "text-align": "left", 
+            "margin": "0px", 
+            "color": "#111827",  /* This makes the unselected text dark gray/black */
+            "--hover-color": "#eee"
+        },
+        "nav-link-selected": {
+            "background": "linear-gradient(90deg, #f58529, #dd2a7b, #8134af, #515bd4)",
+            "color": "white"
+        },
+    }
 )
-
 # ================= HOME =================
 if selected == "Home":
 
