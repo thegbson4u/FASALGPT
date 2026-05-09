@@ -212,10 +212,9 @@ selected = option_menu(
         "cloud-sun-fill",
         "bug-fill",
         "flower1",
-        "info-circle-fill"
+        "info-circle-fill" [cite: 16]
     ],
     orientation="horizontal",
-    # ADD THIS SECTION BELOW TO FIX VISIBILITY
     styles={
         "container": {"padding": "0!important", "background-color": "#ffffff"},
         "icon": {"color": "#111827", "font-size": "18px"}, 
@@ -223,11 +222,11 @@ selected = option_menu(
             "font-size": "16px", 
             "text-align": "left", 
             "margin": "0px", 
-            "color": "#111827",  /* This makes the unselected text dark gray/black */
+            "color": "#111827", # Corrected Python comment
             "--hover-color": "#eee"
         },
         "nav-link-selected": {
-            "background": "linear-gradient(90deg, #f58529, #dd2a7b, #8134af, #515bd4)",
+            "background": "linear-gradient(90deg, #f58529, #dd2a7b, #8134af, #515bd4)", [cite: 11]
             "color": "white"
         },
     }
