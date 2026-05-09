@@ -9,265 +9,73 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ================= CUSTOM CSS =================
-st.markdown("""
-<style>
+/* ================= MODERN FILE UPLOADER ================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+[data-testid="stFileUploader"]{
 
-/* ================= GLOBAL ================= */
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    color: #111827 !important;
-}
-
-/* Main Background */
-.stApp {
-    background-color: #f8fafc;
-}
-
-/* Hide Branding */
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
-
-/* ================= TEXT FIX ================= */
-
-/* ALL TEXT */
-p, span, label, div, h1, h2, h3, h4, h5, h6 {
-    color: #111827 !important;
-}
-
-/* Markdown */
-.stMarkdown,
-.stMarkdown p,
-.stMarkdown div {
-    color: #111827 !important;
-}
-
-/* Titles */
-h1, h2, h3 {
-    color: #111827 !important;
-}
-
-/* ================= NAVBAR FIX ================= */
-
-/* Navbar container */
-.navbar-nav {
-    background: white !important;
-}
-
-/* Menu text */
-.nav-link {
-    color: white !important;
-    font-weight: 600 !important;
-}
-
-/* Selected menu */
-.nav-pills .nav-link.active {
-    background: linear-gradient(
-        90deg,
-        #f58529,
-        #dd2a7b,
-        #8134af,
-        #515bd4
-    ) !important;
-
-    color: white !important;
-}
-
-/* Non-selected menu */
-.nav-pills .nav-link {
-    background: #111827 !important;
-    border-radius: 12px !important;
-    margin: 0 5px;
-}
-
-/* ================= HERO ================= */
-
-.hero-title{
-    font-size:78px;
-    font-weight:900;
-    line-height:1;
-    color:#111827 !important;
-    margin-bottom:20px;
-}
-
-.gradient-text{
-    background: linear-gradient(
-        90deg,
-        #f58529,
-        #dd2a7b,
-        #8134af,
-        #515bd4
+    background:
+    linear-gradient(
+        135deg,
+        rgba(245,133,41,0.08),
+        rgba(221,42,123,0.08),
+        rgba(129,52,175,0.08),
+        rgba(81,91,212,0.08)
     );
 
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
+    border:2px dashed rgba(129,52,175,0.25);
 
-.subtitle{
-    font-size:22px;
-    color:#6b7280 !important;
-    line-height:1.8;
-    max-width:850px;
-}
+    border-radius:28px;
 
-/* ================= BENTO CARDS ================= */
-
-.bento-card{
-    background:white;
-    border-radius:30px;
-    padding:32px;
-    border:1px solid #e5e7eb;
+    padding:28px;
 
     box-shadow:
-    0 10px 30px rgba(0,0,0,0.05);
-
-    transition:0.35s ease;
-
-    height:100%;
-}
-
-.bento-card:hover{
-    transform:translateY(-8px);
-
-    box-shadow:
-    0 20px 50px rgba(221,42,123,0.12);
-}
-
-.large-card{
-    min-height:420px;
-}
-
-.medium-card{
-    min-height:260px;
-}
-
-.card-title{
-    font-size:28px;
-    font-weight:800;
-    color:#111827 !important;
-    margin-bottom:15px;
-}
-
-.card-text{
-    color:#6b7280 !important;
-    font-size:17px;
-    line-height:1.8;
-}
-
-/* ================= METRIC ================= */
-
-.metric-number{
-    font-size:72px;
-    font-weight:900;
-
-    background: linear-gradient(
-        90deg,
-        #f58529,
-        #dd2a7b,
-        #8134af,
-        #515bd4
-    );
-
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
-
-/* ================= BUTTON ================= */
-
-.stButton > button{
-
-    background: linear-gradient(
-        90deg,
-        #f58529,
-        #dd2a7b,
-        #8134af,
-        #515bd4
-    );
-
-    color:white !important;
-    border:none;
-
-    border-radius:18px;
-
-    padding:14px 28px;
-
-    font-size:16px;
-    font-weight:700;
+    0 10px 30px rgba(0,0,0,0.04);
 
     transition:0.3s ease;
 }
 
-.stButton > button:hover{
-    transform:scale(1.03);
+/* Hover Effect */
+[data-testid="stFileUploader"]:hover{
+
+    border:2px dashed #dd2a7b;
+
+    box-shadow:
+    0 20px 40px rgba(221,42,123,0.12);
 }
 
-/* ================= FILE UPLOADER ================= */
-
-[data-testid="stFileUploader"]{
-    background:white;
-    border-radius:24px;
-    border:1px solid #e5e7eb;
-    padding:20px;
+/* Remove Dark Internal Box */
+[data-testid="stFileUploader"] section{
+    background:transparent !important;
+    border:none !important;
 }
 
+/* Upload Text */
 [data-testid="stFileUploader"] *{
     color:#111827 !important;
+    font-weight:500;
 }
 
-/* ================= INPUTS ================= */
+/* Upload Button */
+[data-testid="stBaseButton-secondary"]{
 
-input, textarea {
+    background:white !important;
+
+    border-radius:14px !important;
+
+    border:1px solid #e5e7eb !important;
+
     color:#111827 !important;
+
+    transition:0.3s ease;
 }
 
-input::placeholder{
-    color:#6b7280 !important;
+/* Upload Button Hover */
+[data-testid="stBaseButton-secondary"]:hover{
+
+    border:1px solid #dd2a7b !important;
+
+    transform:translateY(-2px);
 }
-
-/* ================= SLIDERS ================= */
-
-.stSlider label{
-    color:#111827 !important;
-    font-weight:600 !important;
-}
-
-/* ================= METRIC CONTAINERS ================= */
-
-[data-testid="metric-container"]{
-    background:white;
-    border-radius:24px;
-    padding:18px;
-    border:1px solid #e5e7eb;
-    box-shadow:0 10px 20px rgba(0,0,0,0.04);
-}
-
-[data-testid="metric-container"] *{
-    color:#111827 !important;
-}
-
-/* ================= ALERTS ================= */
-
-.stSuccess,
-.stInfo,
-.stAlert {
-    color:#111827 !important;
-}
-
-/* ================= GLOBAL BLOCK ================= */
-
-.block-container{
-    padding-top:2rem;
-    padding-left:4rem;
-    padding-right:4rem;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
 # ================= NAVIGATION =================
 selected = option_menu(
     menu_title=None,
