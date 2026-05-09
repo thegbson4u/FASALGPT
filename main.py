@@ -9,8 +9,184 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-/* ================= MODERN FILE UPLOADER ================= */
+# ================= CUSTOM CSS =================
+st.markdown("""
+<style>
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* GLOBAL */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    color: #111827 !important;
+}
+
+/* APP BG */
+.stApp {
+    background: #f8fafc;
+}
+
+/* HIDE STREAMLIT */
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
+
+/* TEXT FIX */
+h1, h2, h3, h4, h5, h6,
+p, span, label, div {
+    color:#111827 !important;
+}
+
+/* PADDING */
+.block-container{
+    padding-top:2rem;
+    padding-left:4rem;
+    padding-right:4rem;
+}
+
+/* NAVBAR */
+.nav-link {
+    color:white !important;
+    font-weight:600 !important;
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    ) !important;
+
+    color:white !important;
+    border-radius:12px;
+}
+
+.nav-pills .nav-link {
+    background:#111827 !important;
+    border-radius:12px;
+    margin:0 5px;
+}
+
+/* HERO */
+.hero-title{
+    font-size:78px;
+    font-weight:900;
+    line-height:1;
+    color:#111827 !important;
+    margin-bottom:20px;
+}
+
+.gradient-text{
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    font-size:22px;
+    color:#6b7280 !important;
+    line-height:1.8;
+    max-width:850px;
+}
+
+/* BENTO CARD */
+.bento-card{
+    background:white;
+    border-radius:30px;
+    padding:32px;
+    border:1px solid #e5e7eb;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.05);
+
+    transition:0.35s ease;
+    height:100%;
+}
+
+.bento-card:hover{
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 20px 50px rgba(221,42,123,0.12);
+}
+
+.large-card{
+    min-height:420px;
+}
+
+.medium-card{
+    min-height:260px;
+}
+
+/* CARD TEXT */
+.card-title{
+    font-size:28px;
+    font-weight:800;
+    color:#111827 !important;
+    margin-bottom:15px;
+}
+
+.card-text{
+    color:#6b7280 !important;
+    font-size:17px;
+    line-height:1.8;
+}
+
+/* METRIC */
+.metric-number{
+    font-size:72px;
+    font-weight:900;
+
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+/* BUTTON */
+.stButton > button{
+
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+
+    color:white !important;
+    border:none;
+
+    border-radius:18px;
+
+    padding:14px 28px;
+
+    font-size:16px;
+    font-weight:700;
+
+    transition:0.3s ease;
+}
+
+.stButton > button:hover{
+    transform:scale(1.03);
+}
+
+/* FILE UPLOADER */
 [data-testid="stFileUploader"]{
 
     background:
@@ -34,7 +210,6 @@ st.set_page_config(
     transition:0.3s ease;
 }
 
-/* Hover Effect */
 [data-testid="stFileUploader"]:hover{
 
     border:2px dashed #dd2a7b;
@@ -43,39 +218,46 @@ st.set_page_config(
     0 20px 40px rgba(221,42,123,0.12);
 }
 
-/* Remove Dark Internal Box */
 [data-testid="stFileUploader"] section{
     background:transparent !important;
     border:none !important;
 }
 
-/* Upload Text */
 [data-testid="stFileUploader"] *{
     color:#111827 !important;
-    font-weight:500;
 }
 
-/* Upload Button */
-[data-testid="stBaseButton-secondary"]{
+/* METRICS */
+[data-testid="metric-container"]{
+    background:white;
+    border-radius:24px;
+    padding:18px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 20px rgba(0,0,0,0.04);
+}
 
-    background:white !important;
-
-    border-radius:14px !important;
-
-    border:1px solid #e5e7eb !important;
-
+[data-testid="metric-container"] *{
     color:#111827 !important;
-
-    transition:0.3s ease;
 }
 
-/* Upload Button Hover */
-[data-testid="stBaseButton-secondary"]:hover{
-
-    border:1px solid #dd2a7b !important;
-
-    transform:translateY(-2px);
+/* INPUT */
+input {
+    color:#111827 !important;
 }
+
+input::placeholder{
+    color:#6b7280 !important;
+}
+
+/* SLIDER */
+.stSlider label{
+    color:#111827 !important;
+    font-weight:600 !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # ================= NAVIGATION =================
 selected = option_menu(
     menu_title=None,
@@ -119,9 +301,6 @@ if selected == "Home":
     </div>
     """, unsafe_allow_html=True)
 
-    # ===== Bento Grid =====
-
-    # ROW 1
     col1, col2 = st.columns([1.5,1])
 
     with col1:
@@ -136,24 +315,6 @@ if selected == "Home":
         <div class="card-text">
         AI-powered precision agriculture platform designed for
         disease detection, crop recommendation, and weather analysis.
-
-        <br><br>
-
-        Built using:
-        <br>
-        • TensorFlow
-        <br>
-        • Computer Vision
-        <br>
-        • Machine Learning
-        <br>
-        • Weather APIs
-        <br>
-        • Streamlit
-
-        <br><br>
-
-        Empowering modern agriculture using data-driven insights.
         </div>
 
         </div>
@@ -173,131 +334,11 @@ if selected == "Home":
         </div>
 
         <div class="card-text">
-        Deep learning powered disease detection system
-        trained on agricultural image datasets.
-
-        <br><br>
-
-        Real-time classification using computer vision.
+        Deep learning powered disease detection system.
         </div>
 
         </div>
         """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ROW 2
-    col3, col4, col5 = st.columns(3)
-
-    with col3:
-
-        st.markdown("""
-        <div class="bento-card medium-card">
-
-        <div class="card-title">
-        🌦 Weather Intelligence
-        </div>
-
-        <div class="card-text">
-        Live weather forecasting,
-        rainfall prediction,
-        and climate-aware farming insights.
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col4:
-
-        st.markdown("""
-        <div class="bento-card medium-card">
-
-        <div class="card-title">
-        🦠 Disease Detection
-        </div>
-
-        <div class="card-text">
-        Upload crop leaf images
-        and detect diseases instantly
-        using AI-powered computer vision.
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col5:
-
-        st.markdown("""
-        <div class="bento-card medium-card">
-
-        <div class="card-title">
-        🌱 Crop Recommendation
-        </div>
-
-        <div class="card-text">
-        Smart crop prediction system
-        based on soil nutrients,
-        rainfall, and temperature.
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ROW 3
-    col6, col7 = st.columns([1,1.5])
-
-    with col6:
-
-        st.markdown("""
-        <div class="bento-card medium-card">
-
-        <div class="card-title">
-        🚀 Live Demo
-        </div>
-
-        <div class="card-text">
-        Explore the real-time AI agriculture platform
-        with modern interactive dashboards.
-
-        <br><br>
-
-        Streamlit Powered.
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.button("Launch Platform")
-
-    with col7:
-
-        st.markdown("""
-        <div class="bento-card medium-card">
-
-        <div class="card-title">
-        💻 GitHub Repository
-        </div>
-
-        <div class="card-text">
-        Explore the complete source code,
-        AI models, frontend redesign,
-        and deployment-ready architecture
-        of FASALGPT.
-
-        <br><br>
-
-        Modern AI SaaS-style agriculture platform.
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.link_button(
-            "Open GitHub Repository",
-            "https://github.com/thegbson4u/FASALGPT"
-        )
 
 # ================= WEATHER =================
 elif selected == "Weather":
@@ -315,7 +356,7 @@ elif selected == "Weather":
         c3.metric("🌧 Rainfall", "12 mm")
         c4.metric("☁ Condition", "Cloudy")
 
-# ================= DISEASE DETECTION =================
+# ================= DISEASE =================
 elif selected == "Disease Detection":
 
     st.title("🦠 AI Disease Detection")
@@ -331,13 +372,6 @@ elif selected == "Disease Detection":
 
         st.success("Disease Detected: Tomato Early Blight")
         st.info("Confidence Score: 98.4%")
-
-        st.markdown("""
-        ### 🌱 Suggested Treatment
-        - Apply fungicide
-        - Remove infected leaves
-        - Avoid overwatering
-        """)
 
 # ================= CROP AI =================
 elif selected == "Crop AI":
@@ -368,13 +402,10 @@ elif selected == "About":
     st.markdown("""
     ### 🌾 AI-Powered Agriculture Platform
 
-    FASALGPT is a modern precision agriculture system that combines:
-
+    FASALGPT combines:
     - AI Disease Detection
     - Weather Intelligence
     - Crop Recommendation
     - Computer Vision
     - Deep Learning
-
-    Designed to empower modern farming using artificial intelligence.
     """)
