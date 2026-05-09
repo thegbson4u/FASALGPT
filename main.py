@@ -15,49 +15,77 @@ st.markdown("""
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-/* GLOBAL FONT + TEXT FIX */
-html, body, [class*="css"]{
+/* ================= GLOBAL ================= */
+
+html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
-    color:#111827 !important;
+    color: #111827 !important;
 }
 
-/* FORCE ALL TEXT COLORS */
-h1, h2, h3, h4, h5, h6,
-p, span, div, label {
-    color:#111827 !important;
+/* Main Background */
+.stApp {
+    background-color: #f8fafc;
 }
 
-/* Hide Streamlit Branding */
+/* Hide Branding */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
-/* Main Background */
-.stApp{
-    background:#f8fafc;
-    color:#111827;
+/* ================= TEXT FIX ================= */
+
+/* ALL TEXT */
+p, span, label, div, h1, h2, h3, h4, h5, h6 {
+    color: #111827 !important;
 }
 
-/* Global Padding */
-.block-container{
-    padding-top:2rem;
-    padding-bottom:2rem;
-    padding-left:4rem;
-    padding-right:4rem;
+/* Markdown */
+.stMarkdown,
+.stMarkdown p,
+.stMarkdown div {
+    color: #111827 !important;
 }
 
-/* Navigation Menu */
+/* Titles */
+h1, h2, h3 {
+    color: #111827 !important;
+}
+
+/* ================= NAVBAR FIX ================= */
+
+/* Navbar container */
+.navbar-nav {
+    background: white !important;
+}
+
+/* Menu text */
 .nav-link {
-    color:#111827 !important;
+    color: white !important;
+    font-weight: 600 !important;
 }
 
-/* Option Menu Text Fix */
-nav a {
-    color:white !important;
-    font-weight:600 !important;
+/* Selected menu */
+.nav-pills .nav-link.active {
+    background: linear-gradient(
+        90deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    ) !important;
+
+    color: white !important;
 }
 
-/* Hero Title */
+/* Non-selected menu */
+.nav-pills .nav-link {
+    background: #111827 !important;
+    border-radius: 12px !important;
+    margin: 0 5px;
+}
+
+/* ================= HERO ================= */
+
 .hero-title{
     font-size:78px;
     font-weight:900;
@@ -66,7 +94,6 @@ nav a {
     margin-bottom:20px;
 }
 
-/* Gradient Text */
 .gradient-text{
     background: linear-gradient(
         90deg,
@@ -80,7 +107,6 @@ nav a {
     -webkit-text-fill-color:transparent;
 }
 
-/* Subtitle */
 .subtitle{
     font-size:22px;
     color:#6b7280 !important;
@@ -88,7 +114,8 @@ nav a {
     max-width:850px;
 }
 
-/* Bento Cards */
+/* ================= BENTO CARDS ================= */
+
 .bento-card{
     background:white;
     border-radius:30px;
@@ -110,7 +137,14 @@ nav a {
     0 20px 50px rgba(221,42,123,0.12);
 }
 
-/* Card Title */
+.large-card{
+    min-height:420px;
+}
+
+.medium-card{
+    min-height:260px;
+}
+
 .card-title{
     font-size:28px;
     font-weight:800;
@@ -118,24 +152,14 @@ nav a {
     margin-bottom:15px;
 }
 
-/* Card Text */
 .card-text{
     color:#6b7280 !important;
     font-size:17px;
     line-height:1.8;
 }
 
-/* Large Card */
-.large-card{
-    min-height:420px;
-}
+/* ================= METRIC ================= */
 
-/* Medium Card */
-.medium-card{
-    min-height:260px;
-}
-
-/* Metric Number */
 .metric-number{
     font-size:72px;
     font-weight:900;
@@ -152,7 +176,8 @@ nav a {
     -webkit-text-fill-color:transparent;
 }
 
-/* Buttons */
+/* ================= BUTTON ================= */
+
 .stButton > button{
 
     background: linear-gradient(
@@ -180,7 +205,8 @@ nav a {
     transform:scale(1.03);
 }
 
-/* Upload Box */
+/* ================= FILE UPLOADER ================= */
+
 [data-testid="stFileUploader"]{
     background:white;
     border-radius:24px;
@@ -188,12 +214,29 @@ nav a {
     padding:20px;
 }
 
-/* Upload Text */
 [data-testid="stFileUploader"] *{
     color:#111827 !important;
 }
 
-/* Metrics */
+/* ================= INPUTS ================= */
+
+input, textarea {
+    color:#111827 !important;
+}
+
+input::placeholder{
+    color:#6b7280 !important;
+}
+
+/* ================= SLIDERS ================= */
+
+.stSlider label{
+    color:#111827 !important;
+    font-weight:600 !important;
+}
+
+/* ================= METRIC CONTAINERS ================= */
+
 [data-testid="metric-container"]{
     background:white;
     border-radius:24px;
@@ -202,42 +245,24 @@ nav a {
     box-shadow:0 10px 20px rgba(0,0,0,0.04);
 }
 
-/* Metric Text */
 [data-testid="metric-container"] *{
     color:#111827 !important;
 }
 
-/* Input Fields */
-.stTextInput > div > div > input{
-    border-radius:16px;
+/* ================= ALERTS ================= */
+
+.stSuccess,
+.stInfo,
+.stAlert {
     color:#111827 !important;
 }
 
-/* Placeholder */
-input::placeholder{
-    color:#6b7280 !important;
-}
+/* ================= GLOBAL BLOCK ================= */
 
-/* Sliders */
-.stSlider{
-    padding-top:15px;
-    padding-bottom:15px;
-}
-
-/* Slider Labels */
-.stSlider label{
-    color:#111827 !important;
-    font-weight:600;
-}
-
-/* Markdown Text */
-.stMarkdown{
-    color:#111827 !important;
-}
-
-/* Success / Info Text */
-.stAlert{
-    color:#111827 !important;
+.block-container{
+    padding-top:2rem;
+    padding-left:4rem;
+    padding-right:4rem;
 }
 
 </style>
