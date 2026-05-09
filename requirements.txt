@@ -4,3 +4,5 @@ numpy>=2.1.0,<2.4.0
 requests
 pillow
 huggingface_hub
+streamlit-option-menu
+tensorflow
