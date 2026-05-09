@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ================= CSS =================
+# ================= CUSTOM CSS =================
 st.markdown("""
 <style>
 
@@ -24,9 +24,9 @@ html, body, [class*="css"]{
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
-/* Main Background */
+/* Background */
 .stApp{
-    background:#f5f7fb;
+    background:#f6f8fc;
 }
 
 /* Global Padding */
@@ -37,7 +37,7 @@ header {visibility:hidden;}
     padding-right:4rem;
 }
 
-/* Hero Section */
+/* Hero Title */
 .hero-title{
     font-size:78px;
     font-weight:900;
@@ -46,6 +46,7 @@ header {visibility:hidden;}
     margin-bottom:20px;
 }
 
+/* Gradient Text */
 .gradient-text{
     background: linear-gradient(
         90deg,
@@ -59,17 +60,18 @@ header {visibility:hidden;}
     -webkit-text-fill-color:transparent;
 }
 
+/* Subtitle */
 .subtitle{
     font-size:22px;
     color:#6b7280;
     line-height:1.8;
-    max-width:800px;
+    max-width:850px;
 }
 
-/* Bento Card */
+/* Bento Cards */
 .bento-card{
     background:white;
-    border-radius:32px;
+    border-radius:30px;
     padding:32px;
     border:1px solid #e5e7eb;
 
@@ -85,20 +87,20 @@ header {visibility:hidden;}
     transform:translateY(-8px);
 
     box-shadow:
-    0 25px 50px rgba(221,42,123,0.12);
+    0 20px 50px rgba(221,42,123,0.12);
 }
 
-/* Large Bento */
+/* Large Card */
 .large-card{
     min-height:420px;
 }
 
-/* Medium Bento */
+/* Medium Card */
 .medium-card{
     min-height:260px;
 }
 
-/* Small Bento */
+/* Small Card */
 .small-card{
     min-height:180px;
 }
@@ -118,9 +120,9 @@ header {visibility:hidden;}
     line-height:1.8;
 }
 
-/* Metric Number */
+/* Metrics */
 .metric-number{
-    font-size:64px;
+    font-size:72px;
     font-weight:900;
 
     background: linear-gradient(
@@ -171,7 +173,7 @@ header {visibility:hidden;}
     padding:20px;
 }
 
-/* Metrics */
+/* Metrics Container */
 [data-testid="metric-container"]{
     background:white;
     border-radius:24px;
@@ -217,7 +219,6 @@ selected = option_menu(
 # ================= HOME =================
 if selected == "Home":
 
-    # HERO
     st.markdown("""
     <div style="padding-top:30px;padding-bottom:40px;">
 
@@ -238,7 +239,7 @@ if selected == "Home":
     </div>
     """, unsafe_allow_html=True)
 
-    # ================= BENTO GRID =================
+    # ===== Bento Grid =====
 
     # ROW 1
     col1, col2 = st.columns([1.5,1])
@@ -434,7 +435,7 @@ elif selected == "Weather":
         c3.metric("🌧 Rainfall", "12 mm")
         c4.metric("☁ Condition", "Cloudy")
 
-# ================= DISEASE =================
+# ================= DISEASE DETECTION =================
 elif selected == "Disease Detection":
 
     st.title("🦠 AI Disease Detection")
